@@ -22,6 +22,7 @@ defmodule InnerWorkings do
                                             a < b end)
         sortedFormatted = Mp3Reader.readMultipleMp3s(Enum.map(sorted, fn(x) -> head(x) end), "format")
         customPrint(sortedFormatted)
+        sortedFormatted
     end
 
     @doc """
@@ -34,6 +35,7 @@ defmodule InnerWorkings do
                                             a < b end)
         sortedFormatted = Mp3Reader.readMultipleMp3s(Enum.map(sorted, fn(x) -> head(x) end), "format")
         customPrint(sortedFormatted)
+        sortedFormatted
     end
 
     @doc """
@@ -46,6 +48,7 @@ defmodule InnerWorkings do
                                             a < b end)
         sortedFormatted = Mp3Reader.readMultipleMp3s(Enum.map(sorted, fn(x) -> head(x) end), "format")
         customPrint(sortedFormatted)
+        sortedFormatted
     end
 
     @doc """
@@ -55,8 +58,9 @@ defmodule InnerWorkings do
         tags = Mp3Reader.readMultipleMp3s(getOnlyMp3Files(refreshOnce(dir)), "all")
         sorted = Enum.filter(tags, fn(x) -> [_, a | _] = x 
                                             a == search end)
-        sortedFormatted = Mp3Reader.readMultipleMp3s(Enum.map(sorted, fn(x) -> head(x) end), "format")
-        customPrint(sortedFormatted)
+        filteredFormatted = Mp3Reader.readMultipleMp3s(Enum.map(sorted, fn(x) -> head(x) end), "format")
+        customPrint(filteredFormatted)
+        filteredFormatted
     end
 
     @doc """
@@ -66,8 +70,9 @@ defmodule InnerWorkings do
         tags = Mp3Reader.readMultipleMp3s(getOnlyMp3Files(refreshOnce(dir)), "all")
         sorted = Enum.filter(tags, fn(x) -> [_, _, a | _] = x 
                                             a == search end)
-        sortedFormatted = Mp3Reader.readMultipleMp3s(Enum.map(sorted, fn(x) -> head(x) end), "format")
-        customPrint(sortedFormatted)
+        filteredFormatted = Mp3Reader.readMultipleMp3s(Enum.map(sorted, fn(x) -> head(x) end), "format")
+        customPrint(filteredFormatted)
+        filteredFormatted
     end
 
     @doc """
@@ -77,8 +82,9 @@ defmodule InnerWorkings do
         tags = Mp3Reader.readMultipleMp3s(getOnlyMp3Files(refreshOnce(dir)), "all")
         sorted = Enum.filter(tags, fn(x) -> [_, _, _, a | _] = x 
                                             a == search end)
-        sortedFormatted = Mp3Reader.readMultipleMp3s(Enum.map(sorted, fn(x) -> head(x) end), "format")
-        customPrint(sortedFormatted)
+        filteredFormatted = Mp3Reader.readMultipleMp3s(Enum.map(sorted, fn(x) -> head(x) end), "format")
+        customPrint(filteredFormatted)
+        filteredFormatted
     end
 
     defp customPrint([]), do: IO.puts("\n")
