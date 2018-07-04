@@ -1,18 +1,7 @@
 defmodule MAIN do
-  @moduledoc """
-  Documentation for MAIN.
-  """
-
-  @doc """
-  Hello world.
-
-  ## Examples
-
-      iex> MAIN.hello
-      :world
-
-  """
-  def hello do
-    :world
+@moduledoc false
+  use Application
+  def start(_type, _args) do
+    Task.start(Interactor.run())
   end
 end

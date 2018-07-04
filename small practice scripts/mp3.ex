@@ -1,16 +1,4 @@
-defmodule DirReader do
-
-    @moduledoc """
-    This module is for reading files from a selected directory
-    """
-
-    @doc """
-    Reads the directory directly.
-
-    Returns a list of the files with the path, or mrpints a message that it failed and returns an empty list.
-
-    To test: create a directory you know the contents of. Try it with a relative and an absolute path.
-    """
+defmodule Mp3 do
 
     def readPath(path) do
         filesRead = File.ls(path)
@@ -19,12 +7,7 @@ defmodule DirReader do
             {:error, _} -> logFailedFolderRead(path)
         end
     end
-
-    @doc """
-    Reads a directory in depth as deep as possible and returns a list of all of the files and folders in it.
-
-    To test: create a directory with multiple levels of subdirectories you know the contents of. Try it with a relative and an absolute path.
-    """
+    
 
     def readPathRecursively(path) do
         allFiles = readPath(path)
@@ -46,4 +29,33 @@ defmodule DirReader do
         []
     end
     defp getOnlyFolders(paths) when is_list(paths), do: Enum.filter(paths, fn(x) -> File.dir?(x) end)
+
+    def readmp3s(files) do
+        files = Enum.filter(files, fn(x) -> !File.dir?(x) end)
+        reader(files)
+    end
+
+    def readMp3(mp3) do
+        #{:ok, binary} = File.read(mp3)
+        binary = File.read!(mp3)
+        mp3_byte_size = (byte_size(binary) - 128)
+        << _ :: binary - size(mp3_byte_size), id3_tag :: binary >> = binary
+        binary
+        << "TAG",
+            title   :: binary - size(30), 
+            artist  :: binary - size(30), 
+            album   :: binary - size(30), 
+            year    :: binary - size(4), 
+            comment :: binary - size(30), 
+            _   :: binary >> = id3_tag
+        title
+    end
+
+    defp reader([]), do: []
+    defp reader([head | tail]) do
+        {:ok, binary } = File.read(head)
+        mp3_byte_size = (byte_size(binary ) - 128)
+        << _ :: binary-size(mp3_byte_size), id3_tag :: binary >> = binary
+        reader(tail)
+    end
 end

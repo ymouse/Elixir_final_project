@@ -45,5 +45,6 @@ defmodule DirReader do
         IO.puts("Failed to read folder \"" <> path <> "\"!!!!!")
         []
     end
+    defp getOnlyFiles(paths) when is_list(paths), do: Enum.filter(paths, fn(x) -> !File.dir?(x) end)
     defp getOnlyFolders(paths) when is_list(paths), do: Enum.filter(paths, fn(x) -> File.dir?(x) end)
 end
