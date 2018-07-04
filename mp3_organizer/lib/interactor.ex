@@ -57,11 +57,9 @@ defmodule Interactor do
     1. List all songs, arranged by artist;
     2. List all songs, arranged by title;
     3. List all songs, arranged by album;
-    4. List all songs, arranged by genre;
-    5. Search for artist;
-    6. Search for song;
-    7. Search for album;
-    8. Search by genre;
+    4. Search for artist;
+    5. Search for song;
+    6. Search for album;
     0. Exit
     ")
   end
@@ -85,17 +83,17 @@ defmodule Interactor do
     tmp = Task.async(fn -> InnerWorkings.listArrangedByAlbum(getLastDirectory()) end)
     Task.await(tmp, 90000)
   end
-  defp executeInput(5) do
+  defp executeInput(4) do
     search = String.trim(IO.gets("Artist to look up: "), "\n")
     tmp = Task.async(fn -> InnerWorkings.searchByArtist(getLastDirectory(), search) end)
     Task.await(tmp, 90000)
   end
-  defp executeInput(6) do
+  defp executeInput(5) do
     search = String.trim(IO.gets("Title to look up: "), "\n")
     tmp = Task.async(fn -> InnerWorkings.searchByTitle(getLastDirectory(), search) end)
     Task.await(tmp, 90000)
   end
-  defp executeInput(7) do
+  defp executeInput(6) do
     search = String.trim(IO.gets("Album to look up: "), "\n")
     tmp = Task.async(fn -> InnerWorkings.searchByAlbum(getLastDirectory(), search) end)
     Task.await(tmp, 90000)

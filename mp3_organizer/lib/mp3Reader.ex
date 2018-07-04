@@ -1,6 +1,7 @@
 defmodule Mp3Reader do
     @moduledoc """
     Reads the tags of mp3's.
+    Logic for reading the tags from: http://benjamintan.io/blog/2014/06/10/elixir-bit-syntax-and-id3/
     """
 
     @doc """
@@ -13,27 +14,50 @@ defmodule Mp3Reader do
 
     defp readMp3Tag(mp3File, tag) do
         binary = File.read!(mp3File)
-        mp3_byte_size = (byte_size(binary) - 128)
-        << _ :: binary - size(mp3_byte_size), id3_tag :: binary >> = binary
-        << "TAG",
-            title   :: binary-size(30), 
-            artist  :: binary-size(30), 
-            album   :: binary-size(30), 
-            _    :: binary-size(34), 
-            genre :: binary >> = id3_tag
-        case tag do
-            "artist" -> convertBinaryToString(artist)
-            "title" -> convertBinaryToString(title)
-            "album" -> convertBinaryToString(album)
-            "genre" -> convertBinaryToString(genre)
-            "format" -> convertBinaryToString(artist) <> " - " <> convertBinaryToString(album) <> " - " <> convertBinaryToString(title)
-            "all" -> [convertBinaryToString(mp3File), convertBinaryToString(artist), convertBinaryToString(album), convertBinaryToString(title)]
+        audio_size = (byte_size(binary) - 128)
+        << _ :: binary - size(audio_size), id3_tag :: binary >> = binary
+        if (match?(<< "TAG", title :: binary-size(30), artist :: binary-size(30), album :: binary-size(30), year :: binary-size(4), comment :: binary-size(30), rest :: binary >>, id3_tag)) do
+            << "TAG",
+                title   :: binary-size(30), 
+                artist  :: binary-size(30), 
+                album   :: binary-size(30), 
+                year    :: binary-size(4), 
+                comment :: binary-size(30), 
+                rest   :: binary >> = id3_tag
+            case tag do
+                "artist" -> convertBinaryToString(artist)
+                "title" -> convertBinaryToString(title)
+                "album" -> convertBinaryToString(album)
+                "format" -> convertBinaryToString(artist) <> " - " <> convertBinaryToString(album) <> " - " <> convertBinaryToString(title)
+                "all" -> [convertBinaryToString(mp3File), convertBinaryToString(artist), convertBinaryToString(album), convertBinaryToString(title)]
+            end
+        else
+            audio_size = (byte_size(binary) - 130)
+            << _ :: binary - size(audio_size), id3_tag :: binary >> = binary
+            << "TAG",
+                title   :: binary-size(30), 
+                artist  :: binary-size(30), 
+                album   :: binary-size(30), 
+                year    :: binary-size(4), 
+                comment :: binary-size(28), 
+                rest   :: binary >> = id3_tag
+            case tag do
+                "artist" -> convertBinaryToString(artist)
+                "title" -> convertBinaryToString(title)
+                "album" -> convertBinaryToString(album)
+                "format" -> convertBinaryToString(artist) <> " - " <> convertBinaryToString(album) <> " - " <> convertBinaryToString(title)
+                "all" -> [convertBinaryToString(mp3File), convertBinaryToString(artist), convertBinaryToString(album), convertBinaryToString(title)]
+            end
         end
     end
 
     defp convertBinaryToString(binary) do
-        Enum.join(Enum.map(to_charlist(binary), fn(x) -> case x do 
-            0 -> ""
-            _ -> <<x ::utf8>> end end))
+        if String.valid?(binary) do
+            String. trim(Enum.join(Enum.map(to_charlist(binary), fn(x) -> case x do 
+                            0 -> ""
+                            _ -> <<x ::utf8>> end end)), " ")
+        else
+            ""
+        end
     end
 end
