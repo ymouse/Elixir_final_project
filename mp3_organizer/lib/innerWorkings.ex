@@ -3,6 +3,7 @@ defmodule InnerWorkings do
     This module describes the inner workings of the application. 
     It includes the refresh cycle, list functions and search functions.
     """
+    
     @doc """
     Looks up the directory once every 30 seconds. Meant to be run in the background. Currently not called.
     """

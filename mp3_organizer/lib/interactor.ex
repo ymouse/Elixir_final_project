@@ -98,4 +98,8 @@ defmodule Interactor do
     tmp = Task.async(fn -> InnerWorkings.searchByAlbum(getLastDirectory(), search) end)
     Task.await(tmp, 90000)
   end
+  defp executeInput(_) do
+    IO.puts("INVALID COMMAND!!! TRY AGAIN!!!")
+    innerRun(1)
+  end
 end
