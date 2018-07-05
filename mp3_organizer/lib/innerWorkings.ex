@@ -8,7 +8,7 @@ defmodule InnerWorkings do
     Looks up the directory once every 30 seconds. Meant to be run in the background. Currently not called.
     """
     def refreshRepeatedly(dir) do
-        files = refreshOnce(dir)
+        refreshOnce(dir)
         Process.sleep(30000)
         refreshRepeatedly(dir)
     end
@@ -58,7 +58,7 @@ defmodule InnerWorkings do
     def searchByArtist(dir, search) do
         tags = Mp3Reader.readMultipleMp3s(getOnlyMp3Files(refreshOnce(dir)), "all")
         sorted = Enum.filter(tags, fn(x) -> [_, a | _] = x 
-                                            a == search end)
+                                            a =~ search end)
         filteredFormatted = Mp3Reader.readMultipleMp3s(Enum.map(sorted, fn(x) -> head(x) end), "format")
         customPrint(filteredFormatted)
         filteredFormatted
@@ -70,7 +70,7 @@ defmodule InnerWorkings do
     def searchByAlbum(dir, search) do
         tags = Mp3Reader.readMultipleMp3s(getOnlyMp3Files(refreshOnce(dir)), "all")
         sorted = Enum.filter(tags, fn(x) -> [_, _, a | _] = x 
-                                            a == search end)
+                                            a =~ search end)
         filteredFormatted = Mp3Reader.readMultipleMp3s(Enum.map(sorted, fn(x) -> head(x) end), "format")
         customPrint(filteredFormatted)
         filteredFormatted
@@ -82,7 +82,7 @@ defmodule InnerWorkings do
     def searchByTitle(dir, search) do
         tags = Mp3Reader.readMultipleMp3s(getOnlyMp3Files(refreshOnce(dir)), "all")
         sorted = Enum.filter(tags, fn(x) -> [_, _, _, a | _] = x 
-                                            a == search end)
+                                            a =~ search end)
         filteredFormatted = Mp3Reader.readMultipleMp3s(Enum.map(sorted, fn(x) -> head(x) end), "format")
         customPrint(filteredFormatted)
         filteredFormatted
