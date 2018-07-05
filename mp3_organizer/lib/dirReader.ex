@@ -9,7 +9,9 @@ defmodule DirReader do
 
     Returns a list of the files with the path, or mrpints a message that it failed and returns an empty list.
 
-    To test: create a directory you know the contents of. Try it with a relative and an absolute path.
+    Example:
+        iex> DirReader.readPath("../test_dir")
+        ["../test_dir/Alice Cooper", "../test_dir/Dubioza Kolektiv"]
     """
 
     def readPath(path) do
@@ -23,15 +25,21 @@ defmodule DirReader do
     @doc """
     Reads a directory in depth as deep as possible and returns a list of all of the files and folders in it.
 
-    To test: create a directory with multiple levels of subdirectories you know the contents of. Try it with a relative and an absolute path.
+    Example:
+        iex> DirReader.readPathRecursively("../test_dir")
+        ["../test_dir/Alice Cooper", "../test_dir/Dubioza Kolektiv",
+        "../test_dir/Alice Cooper/I Am Made Of You.mp3",
+        "../test_dir/Dubioza Kolektiv/2004 - Dubioza Kolektiv",
+        "../test_dir/Dubioza Kolektiv/2004 - Dubioza Kolektiv/Be Highirly.mp3"]
     """
 
     def readPathRecursively(path) do
         allFiles = readPath(path)
-        subFolders = getOnlyFolders(allFiles)
+        subFolders = Enum.filter(allFiles, fn(x) -> File.dir?(x) end)
         Enum.uniq(allFiles ++ readSubFolders(subFolders))
     end
 
+    # takes a list of paths and reads all of those as well as their subfolders.
     defp readSubFolders([]), do: []
     defp readSubFolders([head | tail]) do
         filesRead = File.ls(head)
@@ -41,10 +49,9 @@ defmodule DirReader do
         end
     end
 
+    # if we fail to read a directory, we put a message on the console and return a [] so as to be able to continue
     defp logFailedFolderRead(path) do
         IO.puts("Failed to read folder \"" <> path <> "\"!!!!!")
         []
     end
-    
-    defp getOnlyFolders(paths) when is_list(paths), do: Enum.filter(paths, fn(x) -> File.dir?(x) end)
 end

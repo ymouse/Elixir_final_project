@@ -17,6 +17,7 @@ defmodule Interactor do
     innerRun(1, task)
   end
 
+  # cancels the task for the refresh and closes the app
   defp innerRun(0, task) do
     send(task.pid, {:ok, "stop"})
     Task.await(task, 30000)
@@ -27,6 +28,7 @@ defmodule Interactor do
     readInput(task)
   end
 
+  # writes down the given directory to a file
   defp writeDownDirectory(directory) do
     if File.exists?("directory") do
       File.rm!("directory")
@@ -34,6 +36,7 @@ defmodule Interactor do
     File.write("directory", directory)
   end
 
+  # if we have no directory set yet, we request one from the user, if we have one, we ask the user if that is the one they want
   defp switchDir("") do
     dir = IO.gets("Please enter an absolute path to your mp3 collection: ")
     String.trim(dir, "\n")
@@ -50,6 +53,7 @@ defmodule Interactor do
     end
   end
 
+  # reads the last set directory from the file. if the file does not exist or is corrupted, we just return an empty string.
   defp getLastDirectory do
     file = File.read("directory")
     case file do
@@ -58,6 +62,7 @@ defmodule Interactor do
     end
   end
 
+  # prints the initial menu for the user
   defp printMenu do
     IO.puts("Now that you have set up your directory, what would you like to do:\n
     1. List all songs, arranged by artist;
@@ -71,12 +76,14 @@ defmodule Interactor do
     ")
   end
 
+  # reads commands from the user and passes them down to innerRun which looks at whether the user has exited or not
   defp readInput(task) do
     {answer, _} = IO.gets("Command: ") |> Integer.parse 
     executeInput(answer)
     innerRun(answer, task)
   end
 
+  # executes the command, given by the user
   defp executeInput(0), do: _ = ""
   defp executeInput(1) do
     tmp = Task.async(fn -> InnerWorkings.listArrangedByArtist(getLastDirectory()) end)
