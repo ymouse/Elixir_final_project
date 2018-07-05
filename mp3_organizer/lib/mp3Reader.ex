@@ -7,12 +7,12 @@ defmodule Mp3Reader do
     @doc """
     Reads and returns all of the tags of songs in a given list of absolute paths.
     """
-    def readMultipleMp3s([], _), do: []
-    def readMultipleMp3s([head | tail], tag) do 
-        [readMp3Tag(head, tag)] ++ readMultipleMp3s(tail, tag)
+    def readMultipleMp3s([]), do: []
+    def readMultipleMp3s([head | tail]) do 
+        [readMp3Tag(head)] ++ readMultipleMp3s(tail)
     end
 
-    defp readMp3Tag(mp3File, tag) do
+    defp readMp3Tag(mp3File) do
         binary = File.read!(mp3File)
         audio_size = (byte_size(binary) - 128)
         << _ :: binary - size(audio_size), id3_tag :: binary >> = binary
@@ -24,13 +24,7 @@ defmodule Mp3Reader do
                 year    :: binary-size(4), 
                 comment :: binary-size(30), 
                 rest    :: binary >> = id3_tag
-            case tag do
-                "artist" -> convertBinaryToString(artist)
-                "title" -> convertBinaryToString(title)
-                "album" -> convertBinaryToString(album)
-                "format" -> convertBinaryToString(artist) <> " - " <> convertBinaryToString(album) <> " - " <> convertBinaryToString(title)
-                "all" -> [convertBinaryToString(mp3File), convertBinaryToString(artist), convertBinaryToString(album), convertBinaryToString(title)]
-            end
+            [convertBinaryToString(mp3File), convertBinaryToString(artist), convertBinaryToString(album), convertBinaryToString(title)]
         else
             audio_size = (byte_size(binary) - 130)
             << _ :: binary - size(audio_size), id3_tag :: binary >> = binary
@@ -41,13 +35,7 @@ defmodule Mp3Reader do
                 year    :: binary-size(4), 
                 comment :: binary-size(28), 
                 rest    :: binary >> = id3_tag
-            case tag do
-                "artist" -> convertBinaryToString(artist)
-                "title" -> convertBinaryToString(title)
-                "album" -> convertBinaryToString(album)
-                "format" -> convertBinaryToString(artist) <> " - " <> convertBinaryToString(album) <> " - " <> convertBinaryToString(title)
-                "all" -> [convertBinaryToString(mp3File), convertBinaryToString(artist), convertBinaryToString(album), convertBinaryToString(title)]
-            end
+            [convertBinaryToString(mp3File), convertBinaryToString(artist), convertBinaryToString(album), convertBinaryToString(title)]
         end
     end
 

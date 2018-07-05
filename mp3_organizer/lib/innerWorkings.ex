@@ -96,7 +96,7 @@ defmodule InnerWorkings do
     defp refreshOnce(dir) do
         files = DirReader.readPathRecursively(dir)
         files = getOnlyMp3Files(files)
-        filesWithTagsRead = Mp3Reader.readMultipleMp3s(files, "all")
+        filesWithTagsRead = Mp3Reader.readMultipleMp3s(files)
         if File.exists?(@mp3) do
             File.rm!(@mp3)
         end
