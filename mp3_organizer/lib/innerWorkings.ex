@@ -1,4 +1,5 @@
 defmodule InnerWorkings do
+    @mp3 "mp3s"
     @moduledoc """
     This module describes the inner workings of the application. 
     It includes the refresh cycle, list functions and search functions.
@@ -8,93 +9,115 @@ defmodule InnerWorkings do
     Looks up the directory once every 30 seconds. Meant to be run in the background. Currently not called.
     """
     def refreshRepeatedly(dir) do
-        refreshOnce(dir)
-        Process.sleep(30000)
-        refreshRepeatedly(dir)
+        receive do
+            {:ok, "stop"} -> IO.puts("stopped") 
+                             File.rm!(@mp3)
+                             #Process.exit(self(), :normal)
+            {:ok, "start"} -> IO.puts("called")
+                              refreshOnce(dir)
+                              Process.sleep(5000)
+                              send(self(), {:ok, "start"})
+                              refreshRepeatedly(dir)
+        end
     end
 
     @doc """
     Lists all of the songs in the directory arranged by artist.
     """
     def listArrangedByArtist(dir) do
-        tags = Mp3Reader.readMultipleMp3s(getOnlyMp3Files(refreshOnce(dir)), "all")
+        refreshOnce(dir)
+        tags = Enum.map(String.split(File.read!(@mp3), "@"), fn(x) -> String.split(x, "#") end)
+        tags = Enum.filter(tags, fn(x) -> length(x) == 4 end)
         sorted = Enum.sort(tags, fn(x,y) -> [_, a | _] = x 
                                             [_, b | _] = y 
                                             a < b end)
-        sortedFormatted = Mp3Reader.readMultipleMp3s(Enum.map(sorted, fn(x) -> head(x) end), "format")
-        customPrint(sortedFormatted)
-        sortedFormatted
+        customPrint(sorted)
     end
 
     @doc """
     Lists all of the songs in the directory arranged by album.
     """
     def listArrangedByAlbum(dir) do
-        tags = Mp3Reader.readMultipleMp3s(getOnlyMp3Files(refreshOnce(dir)), "all")
+        refreshOnce(dir)
+        tags = Enum.map(String.split(File.read!(@mp3), "@"), fn(x) -> String.split(x, "#") end)
+        tags = Enum.filter(tags, fn(x) -> length(x) == 4 end)
         sorted = Enum.sort(tags, fn(x,y) -> [_, _, a | _] = x 
                                             [_, _, b | _] = y 
                                             a < b end)
-        sortedFormatted = Mp3Reader.readMultipleMp3s(Enum.map(sorted, fn(x) -> head(x) end), "format")
-        customPrint(sortedFormatted)
-        sortedFormatted
+        customPrint(sorted)
     end
 
     @doc """
     Lists all of the songs in the directory arranged by title.
     """
     def listArrangedByTitle(dir) do
-        tags = Mp3Reader.readMultipleMp3s(getOnlyMp3Files(refreshOnce(dir)), "all")
+        refreshOnce(dir)
+        tags = Enum.map(String.split(File.read!(@mp3), "@"), fn(x) -> String.split(x, "#") end)
+        tags = Enum.filter(tags, fn(x) -> length(x) == 4 end)
         sorted = Enum.sort(tags, fn(x,y) -> [_, _, _, a | _] = x 
                                             [_, _, _, b | _] = y 
                                             a < b end)
-        sortedFormatted = Mp3Reader.readMultipleMp3s(Enum.map(sorted, fn(x) -> head(x) end), "format")
-        customPrint(sortedFormatted)
-        sortedFormatted
+        customPrint(sorted)
     end
 
     @doc """
     Looks up an artist in the directory and lists all of their songs.
     """
     def searchByArtist(dir, search) do
-        tags = Mp3Reader.readMultipleMp3s(getOnlyMp3Files(refreshOnce(dir)), "all")
-        sorted = Enum.filter(tags, fn(x) -> [_, a | _] = x 
+        refreshOnce(dir)
+        tags = Enum.map(String.split(File.read!(@mp3), "@"), fn(x) -> String.split(x, "#") end)
+        tags = Enum.filter(tags, fn(x) -> length(x) == 4 end)
+        filtered = Enum.filter(tags, fn(x) -> [_, a | _] = x 
                                             a =~ search end)
-        filteredFormatted = Mp3Reader.readMultipleMp3s(Enum.map(sorted, fn(x) -> head(x) end), "format")
-        customPrint(filteredFormatted)
-        filteredFormatted
+        customPrint(filtered)
     end
 
     @doc """
     Looks up an album in the directory and lists all of the songs in it.
     """
     def searchByAlbum(dir, search) do
-        tags = Mp3Reader.readMultipleMp3s(getOnlyMp3Files(refreshOnce(dir)), "all")
-        sorted = Enum.filter(tags, fn(x) -> [_, _, a | _] = x 
+        refreshOnce(dir)
+        tags = Enum.map(String.split(File.read!(@mp3), "@"), fn(x) -> String.split(x, "#") end)
+        tags = Enum.filter(tags, fn(x) -> length(x) == 4 end)
+        filtered = Enum.filter(tags, fn(x) -> [_, _, a | _] = x 
                                             a =~ search end)
-        filteredFormatted = Mp3Reader.readMultipleMp3s(Enum.map(sorted, fn(x) -> head(x) end), "format")
-        customPrint(filteredFormatted)
-        filteredFormatted
+        customPrint(filtered)
     end
 
     @doc """
     Looks up a title in the directory and lists all of the songs with that title.
     """
     def searchByTitle(dir, search) do
-        tags = Mp3Reader.readMultipleMp3s(getOnlyMp3Files(refreshOnce(dir)), "all")
-        sorted = Enum.filter(tags, fn(x) -> [_, _, _, a | _] = x 
+        refreshOnce(dir)
+        tags = Enum.map(String.split(File.read!(@mp3), "@"), fn(x) -> String.split(x, "#") end)
+        tags = Enum.filter(tags, fn(x) -> length(x) == 4 end)
+        filtered = Enum.filter(tags, fn(x) -> [_, _, _, a | _] = x 
                                             a =~ search end)
-        filteredFormatted = Mp3Reader.readMultipleMp3s(Enum.map(sorted, fn(x) -> head(x) end), "format")
-        customPrint(filteredFormatted)
-        filteredFormatted
+        customPrint(filtered)
     end
 
     defp customPrint([]), do: IO.puts("\n")
-    defp customPrint([head | tail]) do
-        IO.puts(head)
+    defp customPrint([[_, artist, album, title] | tail]) do
+        IO.puts(artist <> ": " <> album <> " - " <> title)
         customPrint(tail)
     end
 
+    defp compileStringForMp3sFile([]), do: ""
+    defp compileStringForMp3sFile([head | tail]) do
+        [path, artist, album, title] = head
+        path <> "#" <> artist <> "#" <> album <> "#" <> title <> "@" <> compileStringForMp3sFile(tail)
+    end
+
+    defp refreshOnce(dir) do
+        files = DirReader.readPathRecursively(dir)
+        files = getOnlyMp3Files(files)
+        filesWithTagsRead = Mp3Reader.readMultipleMp3s(files, "all")
+        if File.exists?(@mp3) do
+            File.rm!(@mp3)
+        end
+        File.write(@mp3, compileStringForMp3sFile(filesWithTagsRead))
+        files
+    end
     defp head([h|_]), do: h
-    defp refreshOnce(dir), do: DirReader.readPathRecursively(dir)
     defp getOnlyMp3Files(files) when is_list(files), do: Enum.filter(files, fn(x) -> String.slice(x, -4..-1) == ".mp3" end)
 end

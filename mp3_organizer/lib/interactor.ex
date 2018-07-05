@@ -10,15 +10,20 @@ defmodule Interactor do
     dir = getLastDirectory() # check if we have a directory written down in a file
     directory = switchDir(dir) # we check if the user wants to change the directory or request one
     writeDownDirectory(directory) # write down the actual directory in the file
-    # task = Task.async(fn -> InnerWorkings.refreshRepeatedly(directory) end)
+    task = Task.async(fn -> InnerWorkings.refreshRepeatedly(directory) end)
     printMenu()
-    innerRun(1)
+    send(task.pid, {:ok, "start"})
+    innerRun(1, task)
   end
 
-  defp innerRun(0), do: fn -> :closed end
+  defp innerRun(0, task) do
+    send(task.pid, {:ok, "stop"})
+    Task.await(task)
+    fn -> :closed end
+  end
 
-  defp innerRun(_) do
-    readInput()
+  defp innerRun(_, task) do
+    readInput(task)
   end
 
   defp writeDownDirectory(directory) do
@@ -64,10 +69,10 @@ defmodule Interactor do
     ")
   end
 
-  defp readInput do
+  defp readInput(task) do
     {answer, _} = IO.gets("Command: ") |> Integer.parse 
     executeInput(answer)
-    innerRun(answer)
+    innerRun(answer, task)
   end
 
   defp executeInput(0), do: _ = ""
@@ -100,6 +105,5 @@ defmodule Interactor do
   end
   defp executeInput(_) do
     IO.puts("INVALID COMMAND!!! TRY AGAIN!!!")
-    innerRun(1)
   end
 end
