@@ -1,4 +1,5 @@
 defmodule Mp3Reader do
+
     @moduledoc """
     Reads the tags of mp3's.
     Logic for reading the tags from: http://benjamintan.io/blog/2014/06/10/elixir-bit-syntax-and-id3/

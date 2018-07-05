@@ -1,4 +1,5 @@
 defmodule Interactor do
+
   @moduledoc """
   This module contains the entire communication between the user and the InnerWorkings module, which executes whatever command is needed.
   """

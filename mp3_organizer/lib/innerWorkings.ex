@@ -1,10 +1,12 @@
 defmodule InnerWorkings do
+
     @mp3 "mp3s"
+
     @moduledoc """
     This module describes the inner workings of the application. 
     It includes the refresh cycle, list functions and search functions.
     """
-    
+
     @doc """
     Looks up the directory once every 5 seconds. It is run in the background and stopped when the app is stopped.
     """
@@ -57,7 +59,7 @@ defmodule InnerWorkings do
     def searchByArtist(dir, search) do
         tags = getFullMp3ListFromFile(dir)
         filtered = Enum.filter(tags, fn(x) -> [_, a | _] = x 
-                                              a =~ search end)
+                                                a =~ search end)
         customPrint(filtered)
     end
 
@@ -67,7 +69,7 @@ defmodule InnerWorkings do
     def searchByAlbum(dir, search) do
         tags = getFullMp3ListFromFile(dir)
         filtered = Enum.filter(tags, fn(x) -> [_, _, a | _] = x 
-                                              a =~ search end)
+                                                a =~ search end)
         customPrint(filtered)
     end
 
@@ -77,7 +79,7 @@ defmodule InnerWorkings do
     def searchByTitle(dir, search) do
         tags = getFullMp3ListFromFile(dir)
         filtered = Enum.filter(tags, fn(x) -> [_, _, _, a | _] = x 
-                                              a =~ search end)
+                                                a =~ search end)
         customPrint(filtered)
     end
 
@@ -109,6 +111,6 @@ defmodule InnerWorkings do
         tags = Enum.map(String.split(File.read!(@mp3), "@"), fn(x) -> String.split(x, "#") end)
         Enum.filter(tags, fn(x) -> length(x) == 4 end)
     end
-    
+
     defp getOnlyMp3Files(files) when is_list(files), do: Enum.filter(files, fn(x) -> String.slice(x, -4..-1) == ".mp3" end)
 end
