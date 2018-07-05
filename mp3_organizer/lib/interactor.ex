@@ -66,6 +66,7 @@ defmodule Interactor do
     4. Search for artist;
     5. Search for song;
     6. Search for album;
+    7. Rename All;
     0. Exit
     ")
   end
@@ -102,6 +103,16 @@ defmodule Interactor do
   defp executeInput(6) do
     search = String.trim(IO.gets("Album to look up: "), "\n")
     tmp = Task.async(fn -> InnerWorkings.searchByAlbum(getLastDirectory(), search) end)
+    Task.await(tmp, 90000)
+  end
+  defp executeInput(7) do
+    IO.puts("Please, choose a name pattern:\n
+    1. <artist> - <title>;
+    2. <artist>(<album>) - <title>;
+    3. <title>
+    ")
+    {answer, _} = IO.gets("Pattern: ") |> Integer.parse 
+    tmp = Task.async(fn -> InnerWorkings.renameAll(getLastDirectory(), answer) end)
     Task.await(tmp, 90000)
   end
   defp executeInput(_) do

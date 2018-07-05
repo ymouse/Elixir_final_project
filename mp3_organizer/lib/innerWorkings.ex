@@ -83,6 +83,54 @@ defmodule InnerWorkings do
         customPrint(filtered)
     end
 
+    @doc """
+    Renames all of the mp3 files in the given directory and all of its subdirectories.
+    """
+    def renameAll(dir, pattern) do
+        tags = getFullMp3ListFromFile(dir)
+        pathTuples = formatNamesByPattern(tags, pattern)
+        renameFiles(pathTuples)
+        refreshOnce(dir)
+    end
+
+    defp renameFiles([]), do: _ = ""
+    defp renameFiles([[old, new] | tail]) do
+        renamed = File.rename(old, new)
+        case renamed do
+            {:error, _} -> IO.puts("FAILED TO RENAME " <> old <> "!!!!!\n")
+            _ -> _ = ""
+        end
+        renameFiles(tail)
+    end
+
+    defp formatNamesByPattern([], _), do: []
+    defp formatNamesByPattern([head | tail], 1) do
+        # Pattern 1 is <artist> - <title>
+        [path, artist, _, title] = head
+        separated = String.split(path, "/")
+        newName = artist <> " - " <> title <> ".mp3"
+        [[path, Enum.join(getNewPath(separated, newName), "/")]] ++ formatNamesByPattern(tail, 1)
+    end
+    defp formatNamesByPattern([head | tail], 2) do
+        # Pattern 2 is <artist>(<album>) - <title>
+        [path, artist, album, title] = head
+        separated = String.split(path, "/")
+        newName = artist <> "(" <> album <> ") - " <> title <> ".mp3"
+        [[path, Enum.join(getNewPath(separated, newName), "/")]] ++ formatNamesByPattern(tail, 2)
+    end
+    defp formatNamesByPattern([head | tail], 3) do
+        # Pattern 3 is <title>
+        [path, _, _, title] = head
+        separated = String.split(path, "/")
+        newName = title <> ".mp3"
+        [[path, Enum.join(getNewPath(separated, newName), "/")]] ++ formatNamesByPattern(tail, 3)
+    end
+
+    defp getNewPath([_], newName), do: [newName]
+    defp getNewPath([head | tail], newName) do
+        [head] ++ getNewPath(tail, newName)
+    end
+
     defp customPrint([]), do: IO.puts("\n")
     defp customPrint([[_, artist, album, title] | tail]) do
         IO.puts(artist <> ": " <> album <> " - " <> title)
