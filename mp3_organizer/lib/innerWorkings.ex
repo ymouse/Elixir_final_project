@@ -6,15 +6,12 @@ defmodule InnerWorkings do
     """
     
     @doc """
-    Looks up the directory once every 30 seconds. Meant to be run in the background. Currently not called.
+    Looks up the directory once every 5 seconds. It is run in the background and stopped when the app is stopped.
     """
     def refreshRepeatedly(dir) do
         receive do
-            {:ok, "stop"} -> IO.puts("stopped") 
-                             File.rm!(@mp3)
-                             #Process.exit(self(), :normal)
-            {:ok, "start"} -> IO.puts("called")
-                              refreshOnce(dir)
+            {:ok, "stop"} -> File.rm!(@mp3)
+            {:ok, "start"} -> refreshOnce(dir)
                               Process.sleep(5000)
                               send(self(), {:ok, "start"})
                               refreshRepeatedly(dir)
@@ -118,6 +115,6 @@ defmodule InnerWorkings do
         File.write(@mp3, compileStringForMp3sFile(filesWithTagsRead))
         files
     end
-    defp head([h|_]), do: h
+    
     defp getOnlyMp3Files(files) when is_list(files), do: Enum.filter(files, fn(x) -> String.slice(x, -4..-1) == ".mp3" end)
 end
