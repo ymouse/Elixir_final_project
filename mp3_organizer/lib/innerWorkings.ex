@@ -22,9 +22,7 @@ defmodule InnerWorkings do
     Lists all of the songs in the directory arranged by artist.
     """
     def listArrangedByArtist(dir) do
-        refreshOnce(dir)
-        tags = Enum.map(String.split(File.read!(@mp3), "@"), fn(x) -> String.split(x, "#") end)
-        tags = Enum.filter(tags, fn(x) -> length(x) == 4 end)
+        tags = getFullMp3ListFromFile(dir)
         sorted = Enum.sort(tags, fn(x,y) -> [_, a | _] = x 
                                             [_, b | _] = y 
                                             a < b end)
@@ -59,7 +57,7 @@ defmodule InnerWorkings do
     def searchByArtist(dir, search) do
         tags = getFullMp3ListFromFile(dir)
         filtered = Enum.filter(tags, fn(x) -> [_, a | _] = x 
-                                            a =~ search end)
+                                              a =~ search end)
         customPrint(filtered)
     end
 
@@ -69,7 +67,7 @@ defmodule InnerWorkings do
     def searchByAlbum(dir, search) do
         tags = getFullMp3ListFromFile(dir)
         filtered = Enum.filter(tags, fn(x) -> [_, _, a | _] = x 
-                                            a =~ search end)
+                                              a =~ search end)
         customPrint(filtered)
     end
 
@@ -79,7 +77,7 @@ defmodule InnerWorkings do
     def searchByTitle(dir, search) do
         tags = getFullMp3ListFromFile(dir)
         filtered = Enum.filter(tags, fn(x) -> [_, _, _, a | _] = x 
-                                            a =~ search end)
+                                              a =~ search end)
         customPrint(filtered)
     end
 

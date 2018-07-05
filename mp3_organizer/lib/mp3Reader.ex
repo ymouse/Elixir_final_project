@@ -23,7 +23,7 @@ defmodule Mp3Reader do
                 album   :: binary-size(30), 
                 year    :: binary-size(4), 
                 comment :: binary-size(30), 
-                rest   :: binary >> = id3_tag
+                rest    :: binary >> = id3_tag
             case tag do
                 "artist" -> convertBinaryToString(artist)
                 "title" -> convertBinaryToString(title)
@@ -40,7 +40,7 @@ defmodule Mp3Reader do
                 album   :: binary-size(30), 
                 year    :: binary-size(4), 
                 comment :: binary-size(28), 
-                rest   :: binary >> = id3_tag
+                rest    :: binary >> = id3_tag
             case tag do
                 "artist" -> convertBinaryToString(artist)
                 "title" -> convertBinaryToString(title)
