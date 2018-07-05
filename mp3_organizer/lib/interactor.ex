@@ -19,7 +19,7 @@ defmodule Interactor do
 
   defp innerRun(0, task) do
     send(task.pid, {:ok, "stop"})
-    Task.await(task)
+    Task.await(task, 30000)
     fn -> :closed end
   end
 
