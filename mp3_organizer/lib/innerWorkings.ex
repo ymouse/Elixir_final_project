@@ -35,9 +35,7 @@ defmodule InnerWorkings do
     Lists all of the songs in the directory arranged by album.
     """
     def listArrangedByAlbum(dir) do
-        refreshOnce(dir)
-        tags = Enum.map(String.split(File.read!(@mp3), "@"), fn(x) -> String.split(x, "#") end)
-        tags = Enum.filter(tags, fn(x) -> length(x) == 4 end)
+        tags = getFullMp3ListFromFile(dir)
         sorted = Enum.sort(tags, fn(x,y) -> [_, _, a | _] = x 
                                             [_, _, b | _] = y 
                                             a < b end)
@@ -48,9 +46,7 @@ defmodule InnerWorkings do
     Lists all of the songs in the directory arranged by title.
     """
     def listArrangedByTitle(dir) do
-        refreshOnce(dir)
-        tags = Enum.map(String.split(File.read!(@mp3), "@"), fn(x) -> String.split(x, "#") end)
-        tags = Enum.filter(tags, fn(x) -> length(x) == 4 end)
+        tags = getFullMp3ListFromFile(dir)
         sorted = Enum.sort(tags, fn(x,y) -> [_, _, _, a | _] = x 
                                             [_, _, _, b | _] = y 
                                             a < b end)
@@ -61,9 +57,7 @@ defmodule InnerWorkings do
     Looks up an artist in the directory and lists all of their songs.
     """
     def searchByArtist(dir, search) do
-        refreshOnce(dir)
-        tags = Enum.map(String.split(File.read!(@mp3), "@"), fn(x) -> String.split(x, "#") end)
-        tags = Enum.filter(tags, fn(x) -> length(x) == 4 end)
+        tags = getFullMp3ListFromFile(dir)
         filtered = Enum.filter(tags, fn(x) -> [_, a | _] = x 
                                             a =~ search end)
         customPrint(filtered)
@@ -73,9 +67,7 @@ defmodule InnerWorkings do
     Looks up an album in the directory and lists all of the songs in it.
     """
     def searchByAlbum(dir, search) do
-        refreshOnce(dir)
-        tags = Enum.map(String.split(File.read!(@mp3), "@"), fn(x) -> String.split(x, "#") end)
-        tags = Enum.filter(tags, fn(x) -> length(x) == 4 end)
+        tags = getFullMp3ListFromFile(dir)
         filtered = Enum.filter(tags, fn(x) -> [_, _, a | _] = x 
                                             a =~ search end)
         customPrint(filtered)
@@ -85,9 +77,7 @@ defmodule InnerWorkings do
     Looks up a title in the directory and lists all of the songs with that title.
     """
     def searchByTitle(dir, search) do
-        refreshOnce(dir)
-        tags = Enum.map(String.split(File.read!(@mp3), "@"), fn(x) -> String.split(x, "#") end)
-        tags = Enum.filter(tags, fn(x) -> length(x) == 4 end)
+        tags = getFullMp3ListFromFile(dir)
         filtered = Enum.filter(tags, fn(x) -> [_, _, _, a | _] = x 
                                             a =~ search end)
         customPrint(filtered)
@@ -114,6 +104,12 @@ defmodule InnerWorkings do
         end
         File.write(@mp3, compileStringForMp3sFile(filesWithTagsRead))
         files
+    end
+
+    defp getFullMp3ListFromFile(dir) do
+        refreshOnce(dir)
+        tags = Enum.map(String.split(File.read!(@mp3), "@"), fn(x) -> String.split(x, "#") end)
+        Enum.filter(tags, fn(x) -> length(x) == 4 end)
     end
     
     defp getOnlyMp3Files(files) when is_list(files), do: Enum.filter(files, fn(x) -> String.slice(x, -4..-1) == ".mp3" end)
