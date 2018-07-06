@@ -112,9 +112,13 @@ defmodule InnerWorkings do
         tags = getFullMp3ListFromFile(dir)
         filtered = Enum.filter(tags, fn(x) -> [_, a | _] = x 
                                                 a =~ search end)
-        customPrint(filtered)
-        Enum.map(filtered, fn(x) -> [_, a, b, c] = x
-                                    [a, b, c] end)
+        case length(filtered) do
+            0 -> IO.puts("Nothing found!")
+                 []
+            _ -> customPrint(filtered)
+                 Enum.map(filtered, fn(x) -> [_, a, b, c] = x
+                                             [a, b, c] end)
+        end
     end
 
     @doc """
@@ -137,9 +141,13 @@ defmodule InnerWorkings do
         tags = getFullMp3ListFromFile(dir)
         filtered = Enum.filter(tags, fn(x) -> [_, _, a | _] = x 
                                                 a =~ search end)
-        customPrint(filtered)
-        Enum.map(filtered, fn(x) -> [_, a, b, c] = x
-                                    [a, b, c] end)
+        case length(filtered) do
+            0 -> IO.puts("Nothing found!")
+                 []
+            _ -> customPrint(filtered)
+                 Enum.map(filtered, fn(x) -> [_, a, b, c] = x
+                                             [a, b, c] end)
+        end
     end
 
     @doc """
@@ -162,9 +170,13 @@ defmodule InnerWorkings do
         tags = getFullMp3ListFromFile(dir)
         filtered = Enum.filter(tags, fn(x) -> [_, _, _, a | _] = x 
                                                 a =~ search end)
-        customPrint(filtered)
-        Enum.map(filtered, fn(x) -> [_, a, b, c] = x
-                                    [a, b, c] end)
+        case length(filtered) do
+            0 -> IO.puts("Nothing found!")
+                 []
+            _ -> customPrint(filtered)
+                 Enum.map(filtered, fn(x) -> [_, a, b, c] = x
+                                             [a, b, c] end)
+        end
     end
 
     @doc """
@@ -175,6 +187,51 @@ defmodule InnerWorkings do
         pathTuples = formatNamesByPattern(tags, pattern)
         renameFiles(pathTuples)
         refreshOnce(dir)
+    end
+
+    @doc """
+    Renames all of the mp3 files in the given directory and all of its subdirectories that have a given artist. Afterwards it rereads the directory and writes it down. This function returns nothing.
+    """
+    def renameByArtist(dir, artist, pattern) do
+        tags = getFullMp3ListFromFile(dir)
+        tags = Enum.filter(tags, fn(x) -> [_, a | _] = x
+                                          a == artist end)
+        case length(tags) do
+            0 -> IO.puts("Nothing found")
+            _ -> pathTuples = formatNamesByPattern(tags, pattern)
+                 renameFiles(pathTuples)
+                 refreshOnce(dir)
+        end
+    end
+
+    @doc """
+    Renames all of the mp3 files in the given directory and all of its subdirectories that have a given album. Afterwards it rereads the directory and writes it down. This function returns nothing.
+    """
+    def renameByAlbum(dir, album, pattern) do
+        tags = getFullMp3ListFromFile(dir)
+        Enum.filter(tags, fn(x) -> [_, _, a | _] = x
+                                   a == album end)
+        case length(tags) do
+            0 -> IO.puts("Nothing found")
+            _ -> pathTuples = formatNamesByPattern(tags, pattern)
+                 renameFiles(pathTuples)
+                 refreshOnce(dir)
+        end
+    end
+
+    @doc """
+    Renames all of the mp3 files in the given directory and all of its subdirectories that have a given title. Afterwards it rereads the directory and writes it down. This function returns nothing.
+    """
+    def renameByTitle(dir, title, pattern) do
+        tags = getFullMp3ListFromFile(dir)
+        Enum.filter(tags, fn(x) -> [_, _, _, a | _] = x
+                                   a == title end)
+        case length(tags) do
+            0 -> IO.puts("Nothing found")
+            _ -> pathTuples = formatNamesByPattern(tags, pattern)
+                 renameFiles(pathTuples)
+                 refreshOnce(dir)
+        end
     end
 
     # renames files. it receives a list of lists with 2 elements - the current path to it and the one we're going to set. if for some reason the renaming fails, we log a message into the console, but we do not raise a exception.

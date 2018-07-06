@@ -71,7 +71,10 @@ defmodule Interactor do
     4. Search for artist;
     5. Search for song;
     6. Search for album;
-    7. Rename All;
+    7. Rename all;
+    8. Rename all from artist;
+    9. Rename all from album;
+   10. Rename all with title;
     0. Exit
     ")
   end
@@ -120,6 +123,39 @@ defmodule Interactor do
     ")
     {answer, _} = IO.gets("Pattern: ") |> Integer.parse 
     tmp = Task.async(fn -> InnerWorkings.renameAll(getLastDirectory(), answer) end)
+    Task.await(tmp, 90000)
+  end
+  defp executeInput(8) do
+    IO.puts("Please, choose a name pattern:\n
+    1. <artist> - <title>;
+    2. <artist>(<album>) - <title>;
+    3. <title>
+    ")
+    {pattern, _} = IO.gets("Pattern: ") |> Integer.parse 
+    artist = String.trim(IO.gets("Artist: "), "\n")
+    tmp = Task.async(fn -> InnerWorkings.renameByArtist(getLastDirectory(), artist, pattern) end)
+    Task.await(tmp, 90000)
+  end
+  defp executeInput(9) do
+    IO.puts("Please, choose a name pattern:\n
+    1. <artist> - <title>;
+    2. <artist>(<album>) - <title>;
+    3. <title>
+    ")
+    {pattern, _} = IO.gets("Pattern: ") |> Integer.parse 
+    album = String.trim(IO.gets("Album: "), "\n")
+    tmp = Task.async(fn -> InnerWorkings.renameByAlbum(getLastDirectory(), album, pattern) end)
+    Task.await(tmp, 90000)
+  end
+  defp executeInput(10) do
+    IO.puts("Please, choose a name pattern:\n
+    1. <artist> - <title>;
+    2. <artist>(<album>) - <title>;
+    3. <title>
+    ")
+    {pattern, _} = IO.gets("Pattern: ") |> Integer.parse 
+    title = String.trim(IO.gets("Title: "), "\n")
+    tmp = Task.async(fn -> InnerWorkings.renameByTitle(getLastDirectory(), title, pattern) end)
     Task.await(tmp, 90000)
   end
   defp executeInput(_) do
