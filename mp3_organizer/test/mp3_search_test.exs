@@ -1,6 +1,5 @@
 defmodule Mp3SearchTest do
   use ExUnit.Case
-  doctest InnerWorkings
 
   test "searchByArtist" do
     result = InnerWorkings.searchByArtist(Path.absname("test_dir"), "Alice Cooper")

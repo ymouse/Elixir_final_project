@@ -23,12 +23,8 @@ defmodule InnerWorkings do
     @doc """
     Prints all of the songs in the directory arranged by artist and returns their tags in a list of lists.
 
-    Example:
+    ## Example:
         iex> InnerWorkings.listArrangedByArtist("../test_dir")
-        Alice Cooper: Welcome 2 My Nightmare - I Am Made Of You
-        Dubioza Kolektiv: Dubioza Kolektiv - Be Highirly
-
-
         [
             ["Alice Cooper", "Welcome 2 My Nightmare", "I Am Made Of You"],
             ["Dubioza Kolektiv", "Dubioza Kolektiv", "Be Highirly"]
@@ -47,12 +43,8 @@ defmodule InnerWorkings do
     @doc """
     Prints all of the songs in the directory arranged by album and returns their tags in a list of lists.
 
-    Example:
+    ## Example:
         iex> InnerWorkings.listArrangedByAlbum("../test_dir")
-        Dubioza Kolektiv: Dubioza Kolektiv - Be Highirly
-        Alice Cooper: Welcome 2 My Nightmare - I Am Made Of You
-
-
         [
             ["Dubioza Kolektiv", "Dubioza Kolektiv", "Be Highirly"],
             ["Alice Cooper", "Welcome 2 My Nightmare", "I Am Made Of You"]
@@ -71,12 +63,8 @@ defmodule InnerWorkings do
     @doc """
     Prints all of the songs in the directory arranged by title and returns their tags in a list of lists.
 
-    Example:
+    ## Example:
         iex> InnerWorkings.listArrangedByTitle("../test_dir")
-        Dubioza Kolektiv: Dubioza Kolektiv - Be Highirly
-        Alice Cooper: Welcome 2 My Nightmare - I Am Made Of You
-
-
         [
             ["Dubioza Kolektiv", "Dubioza Kolektiv", "Be Highirly"],
             ["Alice Cooper", "Welcome 2 My Nightmare", "I Am Made Of You"]
@@ -96,16 +84,10 @@ defmodule InnerWorkings do
     Looks up an artist in the directory and lists all of their songs as well as returning their tags as a list of lists.
     Also searches by substrings.
 
-    Example:
+    ## Example:
         iex> InnerWorkings.searchByArtist("../test_dir", "Alice Cooper")
-        Alice Cooper: Welcome 2 My Nightmare - I Am Made Of You
-
-
         [["Alice Cooper", "Welcome 2 My Nightmare", "I Am Made Of You"]]
         iex> InnerWorkings.searchByArtist("../test_dir", "e Co")
-        Alice Cooper: Welcome 2 My Nightmare - I Am Made Of You
-
-
         [["Alice Cooper", "Welcome 2 My Nightmare", "I Am Made Of You"]]
     """
     def searchByArtist(dir, search) do
@@ -125,16 +107,10 @@ defmodule InnerWorkings do
     Looks up an album in the directory and lists all of songs in it as well as returning their tags as a list of lists.
     Also searches by substrings.
 
-    Example:
-        iex> InnerWorkings.searchByArtist("../test_dir", "Welcome 2 My Nightmare")
-        Alice Cooper: Welcome 2 My Nightmare - I Am Made Of You
-
-
+    ## Example:
+        iex> InnerWorkings.searchByAlbum("../test_dir", "Welcome 2 My Nightmare")
         [["Alice Cooper", "Welcome 2 My Nightmare", "I Am Made Of You"]]
-        iex> InnerWorkings.searchByArtist("../test_dir", "ightma")
-        Alice Cooper: Welcome 2 My Nightmare - I Am Made Of You
-
-
+        iex> InnerWorkings.searchByAlbum("../test_dir", "ightma")
         [["Alice Cooper", "Welcome 2 My Nightmare", "I Am Made Of You"]]
     """
     def searchByAlbum(dir, search) do
@@ -154,16 +130,10 @@ defmodule InnerWorkings do
     Looks up a title in the directory and lists all of songs with that title as well as returning their tags as a list of lists.
     Also searches by substrings.
 
-    Example:
-        iex> InnerWorkings.searchByArtist("../test_dir", "I Am Made Of You")
-        Alice Cooper: Welcome 2 My Nightmare - I Am Made Of You
-
-
+    ## Example:
+        iex> InnerWorkings.searchByTitle("../test_dir", "I Am Made Of You")
         [["Alice Cooper", "Welcome 2 My Nightmare", "I Am Made Of You"]]
-        iex> InnerWorkings.searchByArtist("../test_dir", "ade O")
-        Alice Cooper: Welcome 2 My Nightmare - I Am Made Of You
-
-
+        iex> InnerWorkings.searchByTitle("../test_dir", "ade O")
         [["Alice Cooper", "Welcome 2 My Nightmare", "I Am Made Of You"]]
     """
     def searchByTitle(dir, search) do
@@ -267,6 +237,10 @@ defmodule InnerWorkings do
         separated = String.split(path, "/")
         newName = title <> ".mp3"
         [[path, Enum.join(getNewPath(separated, newName), "/")]] ++ formatNamesByPattern(tail, 3)
+    end
+    defp formatNamesByPattern(_, _) do
+        IO.puts("Invalid pattern")
+        []
     end
 
     # constructs puts the parts of the path in a list in the correct order

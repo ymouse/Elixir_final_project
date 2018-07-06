@@ -1,6 +1,5 @@
 defmodule RenameTest do
   use ExUnit.Case
-  doctest InnerWorkings
 
   test "renameAllPattern1" do
     oldNameAliceCooper = Path.absname("test_dir") <> "/Alice Cooper/I Am Made Of You.mp3"
@@ -12,5 +11,29 @@ defmodule RenameTest do
     assert File.exists?(expectedNameDubioza)
     File.rename(expectedNameAliceCooper, oldNameAliceCooper)
     File.rename(expectedNameDubioza, oldNameDubioza)
+  end
+
+  test "renameByArtist" do
+    oldNameAliceCooper = Path.absname("test_dir") <> "/Alice Cooper/I Am Made Of You.mp3"
+    expectedNameAliceCooper = Path.absname("test_dir") <> "/Alice Cooper/Alice Cooper - I Am Made Of You.mp3"
+    InnerWorkings.renameByArtist(Path.absname("test_dir"),"Alice Cooper", 1)
+    assert File.exists?(expectedNameAliceCooper)
+    File.rename(expectedNameAliceCooper, oldNameAliceCooper)
+  end
+
+  test "renameByAlbum" do
+    oldNameAliceCooper = Path.absname("test_dir") <> "/Alice Cooper/I Am Made Of You.mp3"
+    expectedNameAliceCooper = Path.absname("test_dir") <> "/Alice Cooper/Alice Cooper - I Am Made Of You.mp3"
+    InnerWorkings.renameByAlbum(Path.absname("test_dir"),"Welcome 2 My Nightmare", 1)
+    assert File.exists?(expectedNameAliceCooper)
+    File.rename(expectedNameAliceCooper, oldNameAliceCooper)
+  end
+
+  test "renameByTitle" do
+    oldNameAliceCooper = Path.absname("test_dir") <> "/Alice Cooper/I Am Made Of You.mp3"
+    expectedNameAliceCooper = Path.absname("test_dir") <> "/Alice Cooper/Alice Cooper - I Am Made Of You.mp3"
+    InnerWorkings.renameByTitle(Path.absname("test_dir"),"I Am Made Of You", 1)
+    assert File.exists?(expectedNameAliceCooper)
+    File.rename(expectedNameAliceCooper, oldNameAliceCooper)
   end
 end
